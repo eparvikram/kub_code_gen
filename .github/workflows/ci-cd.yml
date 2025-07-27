@@ -34,7 +34,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - name: Print pushed image tag
+    - name: Print pushed image tag # Corrected indentation here
       run: echo "Image pushed: ${{ secrets.DOCKER_USERNAME }}/your-fastapi-app:${{ github.sha }}"
 
     # --- Kustomize Integration for Deployment (Simulated for Minikube) ---
