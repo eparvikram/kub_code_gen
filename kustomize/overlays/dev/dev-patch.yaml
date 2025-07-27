@@ -12,8 +12,8 @@ spec:
           value: "true"
         resources:
           limits:
-            cpu: "500m"  # Increased CPU limit as well, just in case
-            memory: "1Gi" # Increased memory limit significantly (1 Gigabyte)
+            cpu: "500m"  # CPU limit remains the same
+            memory: "2Gi" # Increased memory limit to 2 Gigabytes
           requests:
             cpu: "250m"
-            memory: "512Mi" # Increased memory request
+            memory: "1Gi" # Increased memory request to 1 Gigabyte
