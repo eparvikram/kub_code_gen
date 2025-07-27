@@ -36,8 +36,7 @@ jobs:
 
       - name: Print pushed image tag
         run:  |
-          run: echo Image pushed: "${{ secrets.DOCKER_USERNAME }}/your-fastapi-app:${{ github.sha }}"
-
+          echo "Image pushed: ${{secrets.DOCKER_USERNAME}}/your-fastapi-app:${{github.sha}}"
       # --- Kustomize Integration for Deployment (Simulated for Minikube) ---
       - name: Prepare Kustomize overlay for dev deployment
         id: kustomize_prep
@@ -45,13 +44,11 @@ jobs:
           cp kustomize/overlays/dev/kustomization.yaml kustomize/overlays/dev/kustomization.yaml.bak
           sed -i "s|newTag: dev|newTag: ${{ github.sha }}|" kustomize/overlays/dev/kustomization.yaml
           echo "Kustomization file updated with image tag ${{ github.sha }}"
-
       - name: Build Kustomize manifests (dry-run for validation)
         run: |
           kubectl kustomize kustomize/overlays/dev/ > manifests_dev.yaml
           echo "Generated manifests:"
           cat manifests_dev.yaml
-
       - name: Simulate Kubernetes Deployment with Kustomize
         run: |
           echo "Simulating Kustomize deployment to Kubernetes for 'dev' environment..."
@@ -59,7 +56,6 @@ jobs:
           echo "- You would configure kubectl to connect to your cluster."
           echo "- Then, you would run 'kubectl apply -k kustomize/overlays/dev/' using the dynamic image tag."
           echo "For Minikube, you would typically run 'kubectl apply -k kustomize/overlays/dev/' locally after the image is pushed."
-
       - name: Restore Kustomization file (clean up)
         if: always()
         run: mv kustomize/overlays/dev/kustomization.yaml.bak kustomize/overlays/dev/kustomization.yaml
