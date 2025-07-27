@@ -7,7 +7,9 @@ resources:
 # Overrides for the dev environment
 # You can change image tags, replica counts, add environment variables, etc.
 images:
-  - name: your-docker-username/your-fastapi-app # Must match the image name in base/deployment.yaml
+  # This 'name' MUST exactly match the image name in base/deployment.yaml
+  # which is 'paritoshvikram/fastapi-app' (without the tag)
+  - name: paritoshvikram/fastapi-app
     newTag: dev # This will be replaced by the SHA tag from CI/CD, but useful for local builds
 
 replicas:
