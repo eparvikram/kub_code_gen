@@ -36,7 +36,7 @@ jobs:
 
       - name: Print pushed image tag
         run:  |
-          echo "Image pushed: ${{secrets.DOCKER_USERNAME}}/your-fastapi-app:${{github.sha}}"
+          run: echo Image pushed: "${{ secrets.DOCKER_USERNAME }}/your-fastapi-app:${{ github.sha }}"
 
       # --- Kustomize Integration for Deployment (Simulated for Minikube) ---
       - name: Prepare Kustomize overlay for dev deployment
