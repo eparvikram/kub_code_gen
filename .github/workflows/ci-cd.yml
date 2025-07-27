@@ -12,52 +12,54 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker image
-      id: docker_build
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: "${{ secrets.DOCKER_USERNAME }}/your-fastapi-app:${{ github.sha }}"
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Build and push Docker image
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/your-fastapi-app:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-    - name: Print pushed image tag
-      run: echo "Image pushed: ${{ secrets.DOCKER_USERNAME }}/your-fastapi-app:${{ github.sha }}"
+      - name: Print pushed image tag
+        run:  |
+          echo "Image pushed: ${{secrets.DOCKER_USERNAME}}/your-fastapi-app:${{github.sha}}"
 
-    - name: Prepare Kustomize overlay for dev deployment
-      id: kustomize_prep
-      run: |
-        cp kustomize/overlays/dev/kustomization.yaml kustomize/overlays/dev/kustomization.yaml.bak
-        sed -i "s|newTag: dev|newTag: ${{ github.sha }}|" kustomize/overlays/dev/kustomization.yaml
-        echo "Kustomization file updated with image tag ${{ github.sha }}"
+      # --- Kustomize Integration for Deployment (Simulated for Minikube) ---
+      - name: Prepare Kustomize overlay for dev deployment
+        id: kustomize_prep
+        run: |
+          cp kustomize/overlays/dev/kustomization.yaml kustomize/overlays/dev/kustomization.yaml.bak
+          sed -i "s|newTag: dev|newTag: ${{ github.sha }}|" kustomize/overlays/dev/kustomization.yaml
+          echo "Kustomization file updated with image tag ${{ github.sha }}"
 
-    - name: Build Kustomize manifests (dry-run for validation)
-      run: |
-        kubectl kustomize kustomize/overlays/dev/ > manifests_dev.yaml
-        echo "Generated manifests:"
-        cat manifests_dev.yaml
+      - name: Build Kustomize manifests (dry-run for validation)
+        run: |
+          kubectl kustomize kustomize/overlays/dev/ > manifests_dev.yaml
+          echo "Generated manifests:"
+          cat manifests_dev.yaml
 
-    - name: Simulate Kubernetes Deployment with Kustomize
-      run: |
-        echo "Simulating Kustomize deployment to Kubernetes for 'dev' environment..."
-        echo "In a real CI/CD for a remote cluster (GKE, EKS, etc.):"
-        echo "- You would configure kubectl to connect to your cluster."
-        echo "- Then, you would run 'kubectl apply -k kustomize/overlays/dev/' using the dynamic image tag."
-        echo "For Minikube, you would typically run 'kubectl apply -k kustomize/overlays/dev/' locally after the image is pushed."
+      - name: Simulate Kubernetes Deployment with Kustomize
+        run: |
+          echo "Simulating Kustomize deployment to Kubernetes for 'dev' environment..."
+          echo "In a real CI/CD for a remote cluster (GKE, EKS, etc.):"
+          echo "- You would configure kubectl to connect to your cluster."
+          echo "- Then, you would run 'kubectl apply -k kustomize/overlays/dev/' using the dynamic image tag."
+          echo "For Minikube, you would typically run 'kubectl apply -k kustomize/overlays/dev/' locally after the image is pushed."
 
-    - name: Restore Kustomization file (clean up)
-      if: always()
-      run: mv kustomize/overlays/dev/kustomization.yaml.bak kustomize/overlays/dev/kustomization.yaml
+      - name: Restore Kustomization file (clean up)
+        if: always()
+        run: mv kustomize/overlays/dev/kustomization.yaml.bak kustomize/overlays/dev/kustomization.yaml
