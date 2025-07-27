@@ -72,7 +72,7 @@ jobs:
         #     chmod 600 kubeconfig.yaml
         #     export KUBECONFIG=./kubeconfig.yaml
         #     kubectl apply -k kustomize/overlays/dev/
-        #     kubectl rollout status deployment/my-fastapi-app-dev # Wait for deployment to be ready
+        #     kubectl rollout status deployment/my-fastapi-app-dev # Wait for deployment to be ready.
 
     - name: Restore Kustomization file (clean up)
       if: always() # Run this even if previous steps fail
